@@ -37,7 +37,7 @@ func (c *Config) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	defaults.Set(c)
 
 	type plain Config
-	if err := unmarshal((*olain)(c)); err != nil {
+	if err := unmarshal((*plain)(c)); err != nil {
 		return err
 	}
 
