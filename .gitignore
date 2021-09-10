@@ -1,2 +1,4 @@
+configs/config.yaml
+out/
 curlz
 tmp.json
