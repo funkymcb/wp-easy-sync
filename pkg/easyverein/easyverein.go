@@ -25,9 +25,9 @@ type Member struct {
 var page = 1
 var members []Member
 
-// ListMembers() unmarshals the API response of the contact-details endpoint
+// GetMembers() unmarshals the API response of the contact-details endpoint
 // into a slice of Members
-func ListMembers(client *resty.Client) ([]Member, error) {
+func GetMembers(client *resty.Client) ([]Member, error) {
 	var easyResponse EasyVereinResponse
 
 	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d
@@ -44,7 +44,7 @@ func ListMembers(client *resty.Client) ([]Member, error) {
 	if easyResponse.Next != "" {
 		members = append(members, easyResponse.Members...)
 		page += 1
-		ListMembers(client)
+		GetMembers(client)
 	} else {
 		// append members of the last page
 		members = append(members, easyResponse.Members...)
