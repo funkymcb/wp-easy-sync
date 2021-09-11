@@ -6,6 +6,8 @@ import (
 	"flag"
 	"fmt"
 	"log"
+
+	"github.com/go-resty/resty/v2"
 )
 
 func main() {
@@ -16,12 +18,14 @@ func main() {
 		log.Fatalln("Config could not be loaded. Make sure to add the config.yaml to the specified path", err)
 	}
 
-	members, err := easyverein.ListMembers()
+	client := resty.New()
+
+	members, err := easyverein.ListMembers(client)
 	if err != nil {
 		log.Fatalln("Error fetching Members from easyverein, Error:", err)
 	}
 
-	for i, member := range members.Members {
+	for i, member := range members {
 		fmt.Printf("Member %d\n", i+1)
 		fmt.Printf("\tFirst Name: %s\n", member.FirstName)
 		fmt.Printf("\tLast Name: %s\n", member.FamilyName)

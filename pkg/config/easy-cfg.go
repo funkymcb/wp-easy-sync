@@ -12,7 +12,7 @@ type EasyvereinCfg struct {
 	Options map[string]string `yaml:"options,omitempty"`
 }
 
-// optionsURI will concatenate all options specified in config.yaml
+// OptionsURI will concatenate all options specified in config.yaml
 // and add them to the url
 func (c *EasyvereinCfg) optionsURI() string {
 	optionsURI := url.Values{}
@@ -25,7 +25,7 @@ func (c *EasyvereinCfg) optionsURI() string {
 }
 
 // APIRequestURI parses the URI for the API Request to easyverein
-func (c *EasyvereinCfg) APIRequestURI(endpoint string) string {
+func (c *EasyvereinCfg) APIRequestURI(endpoint string, page int) string {
 	path := fmt.Sprintf("%s%s",
 		config.Easyverein.Path,
 		endpoint,
@@ -34,7 +34,7 @@ func (c *EasyvereinCfg) APIRequestURI(endpoint string) string {
 		Scheme:   "https",
 		Host:     c.Host,
 		Path:     path,
-		RawQuery: c.optionsURI(),
+		RawQuery: fmt.Sprintf("%s&page=%d", c.optionsURI(), page),
 	}
 
 	return requestURI.String()

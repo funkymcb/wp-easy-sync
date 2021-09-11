@@ -4,7 +4,6 @@ import (
 	"cmd/service/main.go/pkg/config"
 	"encoding/json"
 	"fmt"
-	"log"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -23,34 +22,32 @@ type Member struct {
 	Email      string `json:"privateEmail,omitempty"`
 }
 
+var page = 1
+var members []Member
+
 // ListMembers() unmarshals the API response of the contact-details endpoint
 // into a slice of Members
-func ListMembers() (EasyVereinResponse, error) {
-	var members EasyVereinResponse
+func ListMembers(client *resty.Client) ([]Member, error) {
+	var easyResponse EasyVereinResponse
 
-	// requestURI = https://easyverein.com/api/stable/contact-details?limit650
-	requestURI := config.GetConfig().Easyverein.APIRequestURI("contact-details")
-
-	client := resty.New()
+	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d
+	requestURI := config.GetConfig().Easyverein.APIRequestURI("contact-details", page)
 
 	resp, err := makeAPIRequest(client, requestURI)
 
-	err = json.Unmarshal(resp.Body(), &members)
+	err = json.Unmarshal(resp.Body(), &easyResponse)
 	if err != nil {
 		return members, err
 	}
 
-	//TODO fix iterating over all pages
-	// current behaviour: infite loop of requesting page 2
-
-	// keep requesting api and append members until "next" is null
-	// in other words: iterate over all pages until we are on the last page
-	for members.Next != "null" {
-		resp, err = makeAPIRequest(client, members.Next)
-
-		log.Println(resp)
-		log.Println()
-		log.Println()
+	// call ListMembers() recursively until no next page
+	if easyResponse.Next != "" {
+		members = append(members, easyResponse.Members...)
+		page += 1
+		ListMembers(client)
+	} else {
+		// append members of the last page
+		members = append(members, easyResponse.Members...)
 	}
 
 	return members, nil
