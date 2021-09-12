@@ -35,6 +35,9 @@ func main() {
 	}
 
 	log.Printf("Fetched %d Members from Easyverein", len(easyvereinMembers))
+
+	log.Println("Fetching Users from wordpress: ...")
+
 }
 
 func printBanner() {
