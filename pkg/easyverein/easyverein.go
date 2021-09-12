@@ -4,7 +4,6 @@ import (
 	"cmd/service/main.go/pkg/config"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -52,14 +51,12 @@ func GetMembers(client *resty.Client) ([]Member, error) {
 		members = append(members, easyResponse.Members...)
 	}
 
-	for _, member := range members {
-		member.LoginName = generateLoginName(member)
-	}
-
 	return members, nil
 }
 
-// makes API request using resty
+// makes API GET request using resty
+// headers:
+//   "Authorization": "Token <easyverein-api-token>"
 func makeAPIRequest(client *resty.Client, url string) (*resty.Response, error) {
 	resp, err := client.R().
 		SetHeader(
@@ -71,27 +68,4 @@ func makeAPIRequest(client *resty.Client, url string) (*resty.Response, error) {
 	}
 
 	return resp, nil
-}
-
-// generates login name of the convention: firstname.lastname
-func generateLoginName(member Member) string {
-	loginFirstName := replaceMutations(member.FirstName)
-	loginLastName := replaceMutations(member.LastName)
-	loginName := fmt.Sprintf("%s.%s",
-		loginFirstName,
-		loginLastName,
-	)
-
-	return loginName
-}
-
-func replaceMutations(str string) string {
-	str = strings.ToLower(str)
-	str = strings.ReplaceAll(str, " ", ".")
-	str = strings.ReplaceAll(str, "ä", "ae")
-	str = strings.ReplaceAll(str, "ü", "ue")
-	str = strings.ReplaceAll(str, "ö", "oe")
-	str = strings.ReplaceAll(str, "ß", "ss")
-
-	return str
 }

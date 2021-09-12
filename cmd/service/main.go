@@ -3,6 +3,7 @@ package main
 import (
 	"cmd/service/main.go/pkg/config"
 	"cmd/service/main.go/pkg/easyverein"
+	"cmd/service/main.go/pkg/wordpress"
 	"flag"
 	"fmt"
 	"log"
@@ -28,6 +29,10 @@ func main() {
 		log.Fatalln("Error fetching Members from easyverein, Error:", err)
 	}
 	log.Println("Fetching Members from easyverein: SUCCESS")
+
+	for i, member := range easyvereinMembers {
+		easyvereinMembers[i].LoginName = wordpress.GenerateLoginName(member)
+	}
 
 	log.Printf("Fetched %d Members from Easyverein", len(easyvereinMembers))
 }
