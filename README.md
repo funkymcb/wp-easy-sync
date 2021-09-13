@@ -10,7 +10,7 @@ service which is intended to run as cronjob and sync all users bidirectional bet
 
 Run the following command to execute the service
 ```sh
-go run cmd/service/main.go -config path/to/config.yaml
+go run cmd/service/main.go (-config path/to/config.yaml)
 ```
 
 # Curlz used for the service API
