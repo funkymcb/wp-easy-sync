@@ -8,7 +8,10 @@ service which is intended to run as cronjob and sync all users bidirectional bet
 - Replace "EASYVEREIN-API-TOKEN" with your easyverein token  
 - Either place the config.yaml to ./configs/config.yaml or specify the path via -config flag
 
-Run `go run cmd/service/main.go (-config path/to/config.yaml)` to execute the service
+Run the following command to execute the service
+```sh
+go run cmd/service/main.go -config path/to/config.yaml
+```
 
 # Curlz used for the service API
 ### Easyverein
