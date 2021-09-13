@@ -2,6 +2,7 @@ package easyverein
 
 import (
 	"cmd/service/main.go/pkg/config"
+	"cmd/service/main.go/pkg/models"
 	"encoding/json"
 	"fmt"
 
@@ -11,24 +12,16 @@ import (
 // EasyVereinResponse stores all necessarry values of API response
 type EasyVereinResponse struct {
 	// the url for the next page, null if last page
-	Next    string   `json:"next"`
-	Members []Member `json:"results"`
-}
-
-// Member stores all necessarry data for wordpress account creation
-type Member struct {
-	LoginName string
-	FirstName string `json:"firstName"`
-	LastName  string `json:"familyName"`
-	Email     string `json:"privateEmail,omitempty"`
+	Next    string             `json:"next"`
+	Members []models.WVCMember `json:"results"`
 }
 
 var page = 1
-var members []Member
+var members []models.WVCMember
 
 // GetMembers() unmarshals the API response of the contact-details endpoint
 // into a slice of Members
-func GetMembers(client *resty.Client) ([]Member, error) {
+func GetMembers(client *resty.Client) ([]models.WVCMember, error) {
 	var easyResponse EasyVereinResponse
 
 	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d

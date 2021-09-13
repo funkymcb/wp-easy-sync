@@ -10,6 +10,10 @@ service which is intended to run as cronjob and sync all users bidirectional bet
 
 Run `go run cmd/service/main.go (-config path/to/config.yaml)` to execute the service
 
+# Curlz used for the service API
+## Easyverein
+`curl https://easyverein.com/api/stable/contact-details\?limit\=100&page=1 -H "Authorization: Token <TOKEN>"`
+
 # TODOs:
 - [x] Add config tests
 - [ ] Fetch users via wordpress api

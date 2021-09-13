@@ -6,7 +6,7 @@ import (
 )
 
 func TestGenerateLoginNames(t *testing.T) {
-	testTable := []struct {
+	tests := []struct {
 		testMember      easyverein.Member
 		wantedLoginName string
 	}{
@@ -32,15 +32,15 @@ func TestGenerateLoginNames(t *testing.T) {
 		},
 	}
 
-	for _, table := range testTable {
-		got := GenerateLoginName(table.testMember)
+	for _, test := range tests {
+		got := GenerateLoginName(test.testMember)
 
-		if got != table.wantedLoginName {
+		if got != test.wantedLoginName {
 			t.Errorf("generatedLoginName(%s %s) was incorrect, got: %s, want: %s",
-				table.testMember.FirstName,
-				table.testMember.LastName,
+				test.testMember.FirstName,
+				test.testMember.LastName,
 				got,
-				table.wantedLoginName,
+				test.wantedLoginName,
 			)
 		}
 	}

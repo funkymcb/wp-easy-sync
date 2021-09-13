@@ -1,13 +1,13 @@
 package wordpress
 
 import (
-	"cmd/service/main.go/pkg/easyverein"
+	"cmd/service/main.go/pkg/models"
 	"fmt"
 	"strings"
 )
 
 // GenerateLoginName of the convention: firstname.lastname
-func GenerateLoginName(member easyverein.Member) string {
+func GenerateLoginName(member models.WVCMember) string {
 	loginFirstName := replaceMutations(member.FirstName)
 	loginLastName := replaceMutations(member.LastName)
 	loginName := fmt.Sprintf("%s.%s",
