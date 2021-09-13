@@ -11,7 +11,7 @@ service which is intended to run as cronjob and sync all users bidirectional bet
 Run `go run cmd/service/main.go (-config path/to/config.yaml)` to execute the service
 
 # TODOs:
-- [ ] Add config tests
+- [x] Add config tests
 - [ ] Fetch users via wordpress api
 - [ ] Implement sync(compare) algorithm
 - [ ] Add the new users (result of sync algorithm) to wordpress via API

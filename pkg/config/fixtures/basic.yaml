@@ -1,0 +1,6 @@
+easyverein:
+  host: "easyverein.com"
+  path: "/api/stable/"
+  token: "some nice token"
+  options:
+    limit: 100 # easyverein provides max limit of 100 members per page
