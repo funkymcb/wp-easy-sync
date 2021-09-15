@@ -10,8 +10,8 @@ import (
 type WordpressResponse struct {
 }
 
-func GetUsers(client *resty.Client) ([]models.WVCMember, error) {
-	var users []models.WVCMember
+func GetUsers(client *resty.Client) ([]models.WordpressUser, error) {
+	var users []models.WordpressUser
 
 	return users, nil
 }

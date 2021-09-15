@@ -46,5 +46,5 @@ func printBanner() {
 	fmt.Println("                       _ \\<_          <|/")
 	fmt.Println("         ~~/\\O~^~~    (_)/(_)         / >")
 	fmt.Printf("\nSyncs Members of Easyverein with Users of Wordpress\n")
-	fmt.Printf("git: https://github.com/y-peter/wvc-sync\n\n")
+	fmt.Printf("git: https://github.com/y-peter/wp-easy-sync\n\n")
 }

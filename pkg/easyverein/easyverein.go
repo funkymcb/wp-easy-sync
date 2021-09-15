@@ -12,16 +12,16 @@ import (
 // EasyVereinResponse stores all necessarry values of API response
 type EasyVereinResponse struct {
 	// the url for the next page, null if last page
-	Next    string             `json:"next"`
-	Members []models.WVCMember `json:"results"`
+	Next    string                 `json:"next"`
+	Members []models.WordpressUser `json:"results"`
 }
 
 var page = 1
-var members []models.WVCMember
+var members []models.WordpressUser
 
 // GetMembers() unmarshals the API response of the contact-details endpoint
 // into a slice of Members
-func GetMembers(client *resty.Client) ([]models.WVCMember, error) {
+func GetMembers(client *resty.Client) ([]models.WordpressUser, error) {
 	var easyResponse EasyVereinResponse
 
 	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d

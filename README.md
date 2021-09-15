@@ -1,5 +1,5 @@
-# WVC-Sync
-service which is intended to run as cronjob and sync all users bidirectional between easyverein and wordpress
+# WP-Easy-Sync
+service which is intended to run as cronjob to sync all users bidirectional between easyverein and wordpress
 
 # Usage
 ## locally

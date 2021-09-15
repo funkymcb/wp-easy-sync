@@ -1,5 +1,5 @@
 FROM gcr.io/distroless/static:nonroot
 
-COPY ./out/app /bin/wvc-sync
+COPY ./out/app /bin/wp-easy-sync
 
-ENTRYPOINT [ "wvc-sync" ]
+ENTRYPOINT [ "wp-easy-sync" ]
