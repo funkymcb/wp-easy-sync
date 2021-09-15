@@ -23,28 +23,28 @@ func main() {
 
 	client := resty.New()
 
-	log.Println("Fetching Members from easyverein: ...")
+	log.Println("Fetching Members from easyverein.com: ...")
 	easyvereinMembers, err := easyverein.GetMembers(client)
 	if err != nil {
-		log.Fatalln("Error fetching Members from easyverein, Error:", err)
+		log.Fatalln("Error fetching Members from easyverein.com, Error:", err)
 	}
-	log.Println("Fetching Members from easyverein: SUCCESS")
+	log.Println("Fetching Members from easyverein.com: SUCCESS")
 
 	for i, member := range easyvereinMembers {
 		easyvereinMembers[i].LoginName = wordpress.GenerateLoginName(member)
 	}
 
-	log.Printf("Fetched %d Members from Easyverein", len(easyvereinMembers))
+	log.Printf("Fetched %d Members from easyverein.com", len(easyvereinMembers))
 
 	log.Println("Fetching Users from wordpress: ...")
 
 }
 
 func printBanner() {
-	fmt.Printf("\nWVC-Sync:\n")
+	fmt.Printf("\nWP-Easy-Sync:\n")
 	fmt.Println("                         __o           o")
 	fmt.Println("                       _ \\<_          <|/")
 	fmt.Println("         ~~/\\O~^~~    (_)/(_)         / >")
-	fmt.Printf("\nSyncs easyverein Members with Members of Wordpress\n")
+	fmt.Printf("\nSyncs Members of Easyverein with Users of Wordpress\n")
 	fmt.Printf("git: https://github.com/y-peter/wvc-sync\n\n")
 }

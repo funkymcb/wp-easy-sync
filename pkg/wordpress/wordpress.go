@@ -11,5 +11,7 @@ type WordpressResponse struct {
 }
 
 func GetUsers(client *resty.Client) ([]models.WVCMember, error) {
+	var users []models.WVCMember
 
+	return users, nil
 }
