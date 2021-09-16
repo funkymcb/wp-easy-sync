@@ -61,6 +61,16 @@ func TestGetConfig(t *testing.T) {
 						"limit": "100",
 					},
 				},
+				Wordpress: WordpressCfg{
+					Host:     "your-domain.com",
+					Path:     "/wp-json/wp/v2/",
+					Username: "username",
+					Password: "password",
+					Options: map[string]string{
+						"per_page": "100",
+						"context":  "edit",
+					},
+				},
 			},
 		},
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 // GenerateLoginName of the convention: firstname.lastname
-func GenerateLoginName(member models.WordpressUser) string {
+func GenerateLoginName(member models.User) string {
 	loginFirstName := replaceMutations(member.FirstName)
 	loginLastName := replaceMutations(member.LastName)
 	loginName := fmt.Sprintf("%s.%s",

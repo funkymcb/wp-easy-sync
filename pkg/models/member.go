@@ -1,7 +1,7 @@
 package models
 
 // Member stores all necessarry data for wordpress account creation
-type WordpressUser struct {
+type User struct {
 	LoginName string
 	FirstName string `json:"firstName"`
 	LastName  string `json:"familyName"`

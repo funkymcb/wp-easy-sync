@@ -8,7 +8,8 @@ import (
 )
 
 type Config struct {
-	Easyverein EasyvereinCfg
+	Easyverein EasyvereinCfg `yaml:"easyverein"`
+	Wordpress  WordpressCfg  `yaml:"wordpress"`
 }
 
 var config *Config

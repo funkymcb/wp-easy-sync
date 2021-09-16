@@ -12,29 +12,32 @@ import (
 // EasyVereinResponse stores all necessarry values of API response
 type EasyVereinResponse struct {
 	// the url for the next page, null if last page
-	Next    string                 `json:"next"`
-	Members []models.WordpressUser `json:"results"`
+	Next    string        `json:"next"`
+	Members []models.User `json:"results"`
 }
 
 var page = 1
-var members []models.WordpressUser
+var members []models.User
 
 // GetMembers() unmarshals the API response of the contact-details endpoint
-// into a slice of Members
-func GetMembers(client *resty.Client) ([]models.WordpressUser, error) {
+// into a slice of Users
+func GetMembers(client *resty.Client) ([]models.User, error) {
 	var easyResponse EasyVereinResponse
 
 	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d
 	requestURI := config.GetConfig().Easyverein.APIRequestURI("contact-details", page)
 
 	resp, err := makeAPIRequest(client, requestURI)
+	if err != nil {
+		return members, fmt.Errorf("Could not perform GET Request to easyverein contact-details endpoint: %v", err)
+	}
 
 	err = json.Unmarshal(resp.Body(), &easyResponse)
 	if err != nil {
 		return members, err
 	}
 
-	// call ListMembers() recursively until no next page
+	// call GetMembers() recursively until no next page
 	if easyResponse.Next != "" {
 		members = append(members, easyResponse.Members...)
 		page += 1

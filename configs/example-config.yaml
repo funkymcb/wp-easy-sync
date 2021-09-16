@@ -4,3 +4,11 @@ easyverein:
   token: <EASYVEREIN-API-TOKEN>
   options:
     limit: 100 # easyverein provides max limit of 100 members per page
+wordpress:
+  host: "your-domain.com"
+  path: "/wp-json/wp/v2/"
+  user: "username"
+  pass: "password"
+  options:
+    limit: 100
+    context: "edit"

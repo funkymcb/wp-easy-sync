@@ -1,33 +1,33 @@
 package wordpress
 
 import (
-	"cmd/service/main.go/pkg/easyverein"
+	"cmd/service/main.go/pkg/models"
 	"testing"
 )
 
 func TestGenerateLoginNames(t *testing.T) {
 	tests := []struct {
-		testMember      easyverein.Member
+		testMember      models.User
 		wantedLoginName string
 	}{
 		{
-			easyverein.Member{LoginName: "", FirstName: "Max", LastName: "Mustermann", Email: ""},
+			models.User{LoginName: "", FirstName: "Max", LastName: "Mustermann", Email: ""},
 			"max.mustermann",
 		},
 		{
-			easyverein.Member{LoginName: "", FirstName: "Jürgen", LastName: "Ümläute", Email: ""},
+			models.User{LoginName: "", FirstName: "Jürgen", LastName: "Ümläute", Email: ""},
 			"juergen.uemlaeute",
 		},
 		{
-			easyverein.Member{LoginName: "", FirstName: "Fred", LastName: "Feuerstein Meyer", Email: ""},
+			models.User{LoginName: "", FirstName: "Fred", LastName: "Feuerstein Meyer", Email: ""},
 			"fred.feuerstein.meyer",
 		},
 		{
-			easyverein.Member{LoginName: "", FirstName: "Don John", LastName: "McNamara", Email: ""},
+			models.User{LoginName: "", FirstName: "Don John", LastName: "McNamara", Email: ""},
 			"don.john.mcnamara",
 		},
 		{
-			easyverein.Member{LoginName: "", FirstName: "Bjorgen-Marie", LastName: "Kjörgen-Müller de Rapp", Email: ""},
+			models.User{LoginName: "", FirstName: "Bjorgen-Marie", LastName: "Kjörgen-Müller de Rapp", Email: ""},
 			"bjorgen-marie.kjoergen-mueller.de.rapp",
 		},
 	}

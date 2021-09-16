@@ -2,7 +2,6 @@ package main
 
 import (
 	"cmd/service/main.go/pkg/config"
-	"cmd/service/main.go/pkg/easyverein"
 	"cmd/service/main.go/pkg/wordpress"
 	"flag"
 	"fmt"
@@ -23,21 +22,33 @@ func main() {
 
 	client := resty.New()
 
-	log.Println("Fetching Members from easyverein.com: ...")
-	easyvereinMembers, err := easyverein.GetMembers(client)
-	if err != nil {
-		log.Fatalln("Error fetching Members from easyverein.com, Error:", err)
-	}
-	log.Println("Fetching Members from easyverein.com: SUCCESS")
+	// log.Println("Fetching Members from easyverein.com: ...")
+	// easyvereinMembers, err := easyverein.GetMembers(client)
+	// if err != nil {
+	// 	log.Fatalln("Error fetching Members from easyverein.com, Error:", err)
+	// }
+	// log.Println("Fetching Members from easyverein.com: SUCCESS")
 
-	for i, member := range easyvereinMembers {
-		easyvereinMembers[i].LoginName = wordpress.GenerateLoginName(member)
-	}
+	// for i, member := range easyvereinMembers {
+	// 	easyvereinMembers[i].LoginName = wordpress.GenerateLoginName(member)
+	// }
 
-	log.Printf("Fetched %d Members from easyverein.com", len(easyvereinMembers))
+	// log.Printf("Fetched %d Members from easyverein.com", len(easyvereinMembers))
 
 	log.Println("Fetching Users from wordpress: ...")
+	wordpressUsers, err := wordpress.GetUsers(client)
+	if err != nil {
+		log.Fatalf("Error fetching Users from %s, Error: %v",
+			config.GetConfig().Wordpress.Host,
+			err,
+		)
+	}
+	log.Println("Fetching Users from wordpress: SUCCESS")
 
+	log.Printf("Fetched %d Users from %s",
+		len(wordpressUsers),
+		config.GetConfig().Wordpress.Host,
+	)
 }
 
 func printBanner() {

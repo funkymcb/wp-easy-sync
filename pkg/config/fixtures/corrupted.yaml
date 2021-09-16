@@ -3,3 +3,9 @@ easyverein:
   path: "/api/stable/"
   token: "some nice token"
   options # Invalid empty property
+wordpress:
+  host: "your-domain.com"
+  path: "/wp-json/wp/v2/"
+  user: "username"
+  pass: "password"
+  options

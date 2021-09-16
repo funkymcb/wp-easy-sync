@@ -1,5 +1,8 @@
 # WP-Easy-Sync
-service which is intended to run as cronjob to sync all users bidirectional between easyverein and wordpress
+Service which is intended to run as cronjob to sync all users bidirectional between easyverein and wordpress
+
+# Prerequisites
+- Install WP-Plugin 'miniOrange API Authentication' and enable Basic Auth
 
 # Usage
 ## locally
@@ -13,14 +16,22 @@ Run the following command to execute the service
 go run cmd/service/main.go (-config path/to/config.yaml)
 ```
 
-# Curlz used for the service API
-### Easyverein
+# Curlz
+### Easyverein GET users
 ```sh
 curl https://easyverein.com/api/stable/contact-details\?limit\=100&page=1 -H "Authorization: Token <TOKEN>"
 ```
+### Wordpress GET users
+```sh
+curl -H "Authorization:Basic base64encoded(username:password)" -X GET https://your-wp-domain.com/wp-json/wp/v2/users
+```
+
+# Docs
+[Easyverein API Documentation](https://easyverein.com/api/documentation/)
+[Wordpress API Documentation](https://developer.wordpress.org/rest-api/)
 
 # TODOs:
 - [x] Add config tests
-- [ ] Fetch users via wordpress api
+- [x] Fetch users via wordpress api
 - [ ] Implement sync(compare) algorithm
 - [ ] Add the new users (result of sync algorithm) to wordpress via API
