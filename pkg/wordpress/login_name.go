@@ -27,6 +27,11 @@ func replaceMutations(str string) string {
 	str = strings.ReplaceAll(str, "ü", "ue")
 	str = strings.ReplaceAll(str, "ö", "oe")
 	str = strings.ReplaceAll(str, "ß", "ss")
+	str = strings.ReplaceAll(str, "/", "-")
+	str = strings.ReplaceAll(str, ".-.", "-")
+	str = strings.ReplaceAll(str, "(", "-")
+	str = strings.ReplaceAll(str, ")", "")
+	str = strings.ReplaceAll(str, "dr..", "")
 
 	return str
 }

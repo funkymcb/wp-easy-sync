@@ -1,7 +1,7 @@
 easyverein:
-  host: easyverein.com
-  path: /api/stable/
-  token: <EASYVEREIN-API-TOKEN>
+  host: "easyverein.com"
+  path: "/api/stable/"
+  token: "<EASYVEREIN-API-TOKEN>"
   options:
     limit: 100 # easyverein provides max limit of 100 members per page
 wordpress:
@@ -10,5 +10,5 @@ wordpress:
   user: "username"
   pass: "password"
   options:
-    per_page: 100
+    per_page: 100 # wordpress provides max limit of 100 users per page
     context: "edit"

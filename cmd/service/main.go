@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmd/service/main.go/pkg/config"
+	easysync "cmd/service/main.go/pkg/easy-sync"
 	"cmd/service/main.go/pkg/easyverein"
 	"cmd/service/main.go/pkg/wordpress"
 	"flag"
@@ -50,6 +51,11 @@ func main() {
 		len(wordpressUsers),
 		config.GetConfig().Wordpress.Host,
 	)
+
+	log.Println("Running Synchronisation...")
+	if err = easysync.Run(easyvereinMembers, wordpressUsers); err != nil {
+		log.Fatalln("Synchronisation of Users failed:", err)
+	}
 }
 
 func printBanner() {
