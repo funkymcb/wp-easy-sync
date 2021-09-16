@@ -27,8 +27,9 @@ curl -H "Authorization:Basic base64encoded(username:password)" -X GET https://yo
 ```
 
 # Docs
-[Easyverein API Documentation](https://easyverein.com/api/documentation/)
-[Wordpress API Documentation](https://developer.wordpress.org/rest-api/)
+[Easyverein API Documentation](https://easyverein.com/api/documentation/)  
+[Wordpress API Documentation](https://developer.wordpress.org/rest-api/)  
+[Wordpress API List Users](https://developer.wordpress.org/rest-api/reference/users/#list-users)
 
 # TODOs:
 - [x] Add config tests
