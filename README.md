@@ -23,7 +23,7 @@ curl https://easyverein.com/api/stable/contact-details\?limit\=100&page=1 -H "Au
 ```
 ### Wordpress GET users
 ```sh
-curl -H "Authorization:Basic base64encoded(username:password)" -X GET https://your-wp-domain.com/wp-json/wp/v2/users
+curl https://your-wp-domain.com/wp-json/wp/v2/users\?per_page\=100\&page\=1\&context\=edit -H "Authorization:Basic base64encoded(username:password)"
 ```
 
 # Docs
