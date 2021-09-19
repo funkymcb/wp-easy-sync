@@ -32,7 +32,8 @@ func main() {
 	log.Println("Fetching Members from easyverein.com: SUCCESS")
 
 	for i, member := range easyvereinMembers {
-		easyvereinMembers[i].LoginName = wordpress.GenerateLoginName(member)
+		easyvereinMembers[i].LoginName = member.GenerateLoginName()
+		easyvereinMembers[i].Password = member.GeneratePassword()
 	}
 
 	log.Printf("Fetched %d Members from easyverein.com", len(easyvereinMembers))
@@ -53,7 +54,7 @@ func main() {
 	)
 
 	log.Println("Running Synchronisation...")
-	if err = easysync.Run(easyvereinMembers, wordpressUsers); err != nil {
+	if err = easysync.Run(client, easyvereinMembers, wordpressUsers); err != nil {
 		log.Fatalln("Synchronisation of Users failed:", err)
 	}
 }

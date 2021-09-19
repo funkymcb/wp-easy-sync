@@ -34,5 +34,7 @@ curl https://your-wp-domain.com/wp-json/wp/v2/users\?per_page\=100\&page\=1\&con
 # TODOs:
 - [x] Add config tests
 - [x] Fetch users via wordpress api
-- [ ] Implement sync(compare) algorithm
+- [x] Implement sync(compare) algorithm
 - [ ] Add the new users (result of sync algorithm) to wordpress via API
+- [ ] Optimize sync algorithm
+- [ ] Add verbose debug output (by using --debug or -v -vv -vvv flags)

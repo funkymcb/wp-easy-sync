@@ -26,7 +26,7 @@ func (c *WordpressCfg) optionsURI() string {
 }
 
 // APIRequestURI parses the URI for the API Request to wordpress
-func (c *WordpressCfg) APIRequestURI(endpoint string, page int) string {
+func (c *WordpressCfg) APIGETRequestURI(endpoint string, page int) string {
 	path := fmt.Sprintf("%s%s",
 		config.Wordpress.Path,
 		endpoint,
@@ -36,6 +36,22 @@ func (c *WordpressCfg) APIRequestURI(endpoint string, page int) string {
 		Host:     c.Host,
 		Path:     path,
 		RawQuery: fmt.Sprintf("%s&page=%d", c.optionsURI(), page),
+	}
+
+	return requestURI.String()
+}
+
+// APIRequestURI parses the URI for the API Request to wordpress
+func (c *WordpressCfg) APIPOSTRequestURI(endpoint string) string {
+	path := fmt.Sprintf("%s%s",
+		config.Wordpress.Path,
+		endpoint,
+	)
+	requestURI := url.URL{
+		Scheme:   "https",
+		Host:     c.Host,
+		Path:     path,
+		RawQuery: fmt.Sprintf("%s", c.optionsURI()),
 	}
 
 	return requestURI.String()
