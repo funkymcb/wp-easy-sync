@@ -5,6 +5,7 @@ import (
 	"cmd/service/main.go/pkg/models"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -22,6 +23,7 @@ var members []models.User
 // GetMembers() unmarshals the API response of the contact-details endpoint
 // into a slice of Users
 func GetMembers(client *resty.Client) ([]models.User, error) {
+	log.Printf("Fetching users from page: %d", page)
 	var easyResponse EasyVereinResponse
 
 	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d
@@ -29,7 +31,7 @@ func GetMembers(client *resty.Client) ([]models.User, error) {
 
 	resp, err := makeAPIRequest(client, requestURI)
 	if err != nil {
-		return members, fmt.Errorf("Could not perform GET Request to easyverein contact-details endpoint: %v", err)
+		return members, fmt.Errorf("could not perform get request to easyverein contact-details endpoint: %v", err)
 	}
 
 	err = json.Unmarshal(resp.Body(), &easyResponse)

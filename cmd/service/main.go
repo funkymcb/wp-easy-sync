@@ -1,15 +1,13 @@
 package main
 
 import (
+	"cmd/service/main.go/handler"
 	"cmd/service/main.go/pkg/config"
-	easysync "cmd/service/main.go/pkg/easy-sync"
-	"cmd/service/main.go/pkg/easyverein"
-	"cmd/service/main.go/pkg/wordpress"
 	"flag"
 	"fmt"
 	"log"
 
-	"github.com/go-resty/resty/v2"
+	"github.com/savsgio/atreugo/v11"
 )
 
 func main() {
@@ -22,48 +20,23 @@ func main() {
 		log.Fatalln("Config could not be loaded. Make sure to add the config.yaml to the specified path", err)
 	}
 
-	client := resty.New()
+	apiServer := atreugo.New(config.GetConfig().API.AtreugoConfig())
+	initAPIRoutes(apiServer)
 
-	log.Println("Fetching Members from easyverein.com: ...")
-	easyvereinMembers, err := easyverein.GetMembers(client)
-	if err != nil {
-		log.Fatalln("Error fetching Members from easyverein.com, Error:", err)
-	}
-	log.Println("Fetching Members from easyverein.com: SUCCESS")
-
-	for i, member := range easyvereinMembers {
-		easyvereinMembers[i].LoginName = member.GenerateLoginName()
-		easyvereinMembers[i].Password = member.GeneratePassword()
-	}
-
-	log.Printf("Fetched %d Members from easyverein.com", len(easyvereinMembers))
-
-	log.Println("Fetching Users from wordpress: ...")
-	wordpressUsers, err := wordpress.GetUsers(client)
-	if err != nil {
-		log.Fatalf("Error fetching Users from %s, Error: %v",
-			config.GetConfig().Wordpress.Host,
-			err,
-		)
-	}
-	log.Println("Fetching Users from wordpress: SUCCESS")
-
-	log.Printf("Fetched %d Users from %s",
-		len(wordpressUsers),
-		config.GetConfig().Wordpress.Host,
-	)
-
-	log.Println("Running Synchronisation...")
-	if err = easysync.Run(client, easyvereinMembers, wordpressUsers); err != nil {
-		log.Fatalln("Synchronisation of Users failed:", err)
+	if err := apiServer.ListenAndServe(); err != nil {
+		panic(err)
 	}
 }
 
 func printBanner() {
-	fmt.Printf("\nWP-Easy-Sync:\n")
+	fmt.Printf("\nWP-Easy-Sync-API:\n")
 	fmt.Println("                         __o           o")
 	fmt.Println("                       _ \\<_          <|/")
 	fmt.Println("         ~~/\\O~^~~    (_)/(_)         / >")
-	fmt.Printf("\nSyncs Members of Easyverein with Users of Wordpress\n")
+	fmt.Printf("\nAPI to handle user synchronisation between easyverein and wordpress\n")
 	fmt.Printf("git: https://github.com/y-peter/wp-easy-sync\n\n")
+}
+
+func initAPIRoutes(server *atreugo.Atreugo) {
+	server.GET("/sync", handler.SyncEasyToWP)
 }

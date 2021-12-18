@@ -1,3 +1,7 @@
+api:
+  port: 8080
+  token: superSecureToken!
+  auth-offset: 60 # offset of auth timestamp in seconds
 easyverein:
   host: "easyverein.com"
   path: "/api/stable/"

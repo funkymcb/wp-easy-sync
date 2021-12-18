@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	API        APICfg        `yaml:"api"`
 	Easyverein EasyvereinCfg `yaml:"easyverein"`
 	Wordpress  WordpressCfg  `yaml:"wordpress"`
 }
