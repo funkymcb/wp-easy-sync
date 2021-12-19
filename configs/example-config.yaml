@@ -17,3 +17,6 @@ wordpress:
   options:
     per_page: 100 # wordpress provides max limit of 100 users per page
     context: "edit"
+  blacklist: # list of usernames that will be skipped in user synchronisation
+    - max.mustemann
+    - franz.joseph.strauss

@@ -53,10 +53,6 @@ func (u User) GeneratePassword(prefix string) string {
 func replaceMutations(str string) string {
 	str = strings.ToLower(str)
 	str = strings.ReplaceAll(str, " ", ".")
-	str = strings.ReplaceAll(str, "ä", "ae")
-	str = strings.ReplaceAll(str, "ü", "ue")
-	str = strings.ReplaceAll(str, "ö", "oe")
-	str = strings.ReplaceAll(str, "ß", "ss")
 	str = strings.ReplaceAll(str, "/", "-")
 	str = strings.ReplaceAll(str, ".-.", "-")
 	str = strings.ReplaceAll(str, "(", "-")

@@ -19,8 +19,7 @@ import (
 // Path: /sync
 // Responses: 202
 func SyncEasyToWP(ctx *atreugo.RequestCtx) error {
-	log.Println("Processing:")
-	log.Printf("%s http://%s:%d%s",
+	log.Printf("Processing: %s http://%s:%d%s",
 		string(ctx.Method()),
 		config.GetConfig().API.Host,
 		config.GetConfig().API.Port,
@@ -34,7 +33,7 @@ func SyncEasyToWP(ctx *atreugo.RequestCtx) error {
 		config.GetConfig().API.Port,
 		requestIDStr,
 	)
-	log.Printf("[SYNC %s] Status Polling URL: %s", requestIDStr, pollingURL)
+	log.Printf("[SYNC: %s] Status Polling URL: %s", requestIDStr, pollingURL)
 
 	go easysync.TriggerSync(requestIDStr)
 

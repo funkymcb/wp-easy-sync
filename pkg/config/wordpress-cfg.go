@@ -12,6 +12,7 @@ type WordpressCfg struct {
 	Password        string            `yaml:"pass"`
 	DefaultPassword string            `yaml:"default-password"`
 	Options         map[string]string `yaml:"options,omitempty"`
+	Blacklist       []string          `yaml:"blacklist"`
 }
 
 // OptionsURI will concatenate all options specified in config.yaml

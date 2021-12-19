@@ -89,7 +89,7 @@ func GetUsers(prefix string, client *resty.Client) (*[]models.User, error) {
 }
 
 // CreateUser() creates a Wordpress User Account
-func CreateUser(client *resty.Client, user models.User) error {
+func CreateUser(prefix string, client *resty.Client, user models.User) error {
 	requestURI := config.GetConfig().Wordpress.APIPOSTRequestURI("users")
 
 	postData := map[string]string{
@@ -102,17 +102,18 @@ func CreateUser(client *resty.Client, user models.User) error {
 
 	resp, err := makePOSTRequest(client, requestURI, postData)
 	if err != nil {
-		return fmt.Errorf("Error performing API POST Request %v", err)
+		return fmt.Errorf("error performing api post request %v", err)
 	}
 
 	if resp.StatusCode() == 200 {
 		log.Printf("Account creation for %s successful", user.LoginName)
 	} else if resp.StatusCode() >= 400 && resp.StatusCode() < 500 {
-		return fmt.Errorf("Account creation Request failed: Status Code: %d",
+		return fmt.Errorf("account creation request failed: status code: %d",
 			resp.StatusCode(),
 		)
 	} else if resp.StatusCode() == 500 {
-		log.Printf("Error creating User %s\nSkipping Account creation.\n Error: %s",
+		return fmt.Errorf("%s error creating user %s skipping account creation. error message: %s",
+			prefix,
 			user.LoginName,
 			resp,
 		)

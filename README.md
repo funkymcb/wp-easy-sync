@@ -16,6 +16,8 @@ Run the following command to execute the service
 go run cmd/service/main.go (-config path/to/config.yaml)
 ```
 
+## as docker container
+
 # Curlz
 ### Easyverein GET users
 ```sh
