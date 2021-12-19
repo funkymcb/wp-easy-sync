@@ -32,15 +32,15 @@ func (u User) GenerateLoginName() string {
 
 // User.GeneratePassword() generated the default Password:
 // Date of birth (ddmmyyyy)
-func (u User) GeneratePassword() string {
+func (u User) GeneratePassword(prefix string) string {
 	dateLayout := "2006-01-02"
 	dateOfBirth, err := time.Parse(dateLayout, u.DateOfBirth)
 	if err != nil {
 		defaultPW := config.GetConfig().Wordpress.DefaultPassword
-		log.Printf("Failed password creation for '%s %s'. Date of Birth either missing or in the wrong format. Password set to configured default value",
+		log.Printf("%s Failed password creation for '%s %s'. Date of Birth either missing or in the wrong format. Password set to configured default value",
+			prefix,
 			u.FirstName,
 			u.LastName,
-			defaultPW,
 		)
 		return defaultPW
 	}

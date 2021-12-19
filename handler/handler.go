@@ -34,8 +34,7 @@ func SyncEasyToWP(ctx *atreugo.RequestCtx) error {
 		config.GetConfig().API.Port,
 		requestIDStr,
 	)
-	log.Println("Status Polling URL:")
-	log.Println(pollingURL)
+	log.Printf("[SYNC %s] Status Polling URL: %s", requestIDStr, pollingURL)
 
 	go easysync.TriggerSync(requestIDStr)
 

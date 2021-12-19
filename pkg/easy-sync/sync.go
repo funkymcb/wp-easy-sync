@@ -18,10 +18,12 @@ type Sync struct {
 	LastSync      time.Time
 	Status        bool
 	Message       string
-	CreatedUsers  map[int]string
+	AddedUsers    map[int]string
 }
 
 var syncStatus *Sync
+
+var prefix = "[SYNC %s] "
 
 func init() {
 	syncStatus = &Sync{
@@ -44,58 +46,69 @@ func GetSyncStatus(requestID string) (*Sync, error) {
 // if sync was successful the value will be set to true
 func TriggerSync(requestID string) {
 	newSync(requestID)
+	prefixID := fmt.Sprintf(prefix, requestID)
 
-	log.Println("################ RUNNING USER SYNC ################")
+	log.Println(prefixID, "################ RUNNING USER SYNC ################")
 	client := resty.New()
 
-	log.Println("Fetching Members from easyverein.com: ...")
-	log.Println("(API can list max 100 users per page)")
-	easyvereinMembers, err := easyverein.GetMembers(client)
+	log.Println(prefixID, "Fetching Members from easyverein.com: ...")
+	log.Println(prefixID, "(API can list max 100 users per page)")
+	easyvereinMembers, err := easyverein.GetMembers(prefixID, client)
 	if err != nil {
 		msg := "Error fetching Members from easyverein.com, Error:"
-		log.Println(msg, err)
+		log.Println(prefixID, msg, err)
 		syncStatus.Message = msg
 	}
-	log.Println("Fetching Members from easyverein.com: SUCCESS")
+	log.Println(prefixID, "Fetching Members from easyverein.com: SUCCESS")
 
 	for i, member := range *easyvereinMembers {
 		(*easyvereinMembers)[i].LoginName = member.GenerateLoginName()
-		(*easyvereinMembers)[i].Password = member.GeneratePassword()
+		(*easyvereinMembers)[i].Password = member.GeneratePassword(prefixID)
 	}
 
-	log.Printf("Fetched %d Members from easyverein.com", len(*easyvereinMembers))
+	log.Printf("%s Fetched %d Members from easyverein.com", prefixID, len(*easyvereinMembers))
 
-	log.Printf("Fetching Members from %s: ...", config.GetConfig().Wordpress.Host)
-	log.Println("(API can list max 100 users per page)")
-	wordpressUsers, err := wordpress.GetUsers(client)
+	log.Printf("%s Fetching Members from %s: ...", prefixID, config.GetConfig().Wordpress.Host)
+	log.Println(prefixID, "(API can list max 100 users per page)")
+	wordpressUsers, err := wordpress.GetUsers(prefixID, client)
 	if err != nil {
-		msg := fmt.Sprintf("error fetching users from %s, %v",
+		msg := fmt.Sprintf("%s error fetching users from %s, %v",
+			prefixID,
 			config.GetConfig().Wordpress.Host,
 			err,
 		)
 		syncStatus.Message = msg
 	}
-	log.Printf("Fetching Users from %s: SUCCESS", config.GetConfig().Wordpress.Host)
+	log.Printf("%s Fetching Users from %s: SUCCESS", prefixID, config.GetConfig().Wordpress.Host)
 
-	log.Printf("Fetched %d Users from %s",
+	log.Printf("%s Fetched %d Users from %s",
+		prefixID,
 		len(*wordpressUsers),
 		config.GetConfig().Wordpress.Host,
 	)
 
-	// TODO optimize user handling first
-	// log.Println("Running Synchronisation...")
-	// if err = run(client, easyvereinMembers, wordpressUsers); err != nil {
-	//  msg := fmt.Sprintf("Synchronisation of Users failed: %v", err)
-	//  syncStatus.Message= msg
-	// }
+	log.Println(prefixID, "Running Synchronisation...")
+	addedUsers, err := run(prefixID, client, easyvereinMembers, wordpressUsers)
+	if err != nil {
+		msg := fmt.Sprintf("%s Synchronisation of Users failed: %v", prefixID, err)
+		syncStatus.Message = msg
+	}
+
+	addedUsersMap := make(map[int]string)
+	for i, user := range addedUsers {
+		name := fmt.Sprintf("%s %s", user.FirstName, user.LastName)
+		addedUsersMap[i] = name
+	}
+	syncStatus.AddedUsers = addedUsersMap
 
 	// clean things up
 	client.SetCloseConnection(true)
 	setSyncSuccess()
 	cleanSyncArtifacts()
+	// TODO HUGE BUG slices do not get cleared...
 	easyvereinMembers = nil
 	wordpressUsers = nil
-	log.Println("################ USER SYNC SUCCESSFUL ################")
+	log.Println(prefixID, "################ USER SYNC SUCCESSFUL ################")
 	log.Println("keep listening for requests ...")
 }
 
@@ -103,18 +116,19 @@ func newSync(ID string) {
 	syncStatus.CurrentSyncID = ID
 	syncStatus.Status = false
 	syncStatus.Message = "sync running"
+	syncStatus.AddedUsers = make(map[int]string)
 }
 
 // Run runs a synchronisation of two User slices.
 // Every member that exists in easyverein but not in wordpress
 // will be created in wp
 // the users which were newly created will be returned
-func run(client *resty.Client, easyMembers, wpUsers []models.User) ([]models.User, error) {
+func run(prefix string, client *resty.Client, easyMembers, wpUsers *[]models.User) ([]models.User, error) {
 	// slice of Users to store the additional easyverein members
 	var additionalUsers []models.User
 
 EasyLoop:
-	for _, easyMember := range easyMembers {
+	for _, easyMember := range *easyMembers {
 		// skip empty easyverein members
 		if easyMember.FirstName == "" {
 			continue
@@ -126,14 +140,11 @@ EasyLoop:
 			continue
 		}
 
-		for _, wpUser := range wpUsers {
+		for _, wpUser := range *wpUsers {
 			fullWPUserName := fmt.Sprintf("%s %s",
 				wpUser.FirstName,
 				wpUser.LastName,
 			)
-			if easyMember.Email == wpUser.Email {
-				continue EasyLoop
-			}
 			if easyMember.LoginName == wpUser.LoginName {
 				continue EasyLoop
 			}
@@ -147,27 +158,33 @@ EasyLoop:
 
 	var counter int
 	for i, add := range additionalUsers {
-		log.Printf("User %s %s has no Wordpress Account yet.",
+		log.Printf("%s User %s %s has no Wordpress Account yet. Account will be created",
+			prefix,
 			add.FirstName,
 			add.LastName,
 		)
 
 		if add.Email == "" {
-			log.Println("User has no valid email Adress. Account can not be created. Skipping")
+			log.Printf("%s User %s has no valid email Adress. Account can not be created. Skipping",
+				prefix,
+				add.LoginName,
+			)
 			continue
 		}
 
-		log.Printf("Account %s will be created", add.LoginName)
-		err := wordpress.CreateUser(client, add)
-		if err != nil {
-			return nil, fmt.Errorf("user could not be created: %v", err)
-		}
+		// err := wordpress.CreateUser(client, add)
+		// if err != nil {
+		// 	return nil, fmt.Errorf("user could not be created: %v", err)
+		// }
 		counter = i
 	}
 	if counter > 0 {
-		log.Printf("Synchronisation done. %d WP-Accounts have been created", counter)
+		log.Printf("%s Synchronisation done. %d WP-Accounts have been created",
+			prefix,
+			counter,
+		)
 	} else {
-		log.Println("Synchronisation done. Everything up to date. No Accounts created")
+		log.Println(prefix, "Synchronisation done. Everything up to date. No Accounts created")
 	}
 
 	return additionalUsers, nil

@@ -26,8 +26,8 @@ func init() {
 
 // GetMembers() unmarshals the API response of the contact-details endpoint
 // into a slice of Users
-func GetMembers(client *resty.Client) (*[]models.User, error) {
-	log.Printf("Fetching users from page: %d", Page)
+func GetMembers(prefix string, client *resty.Client) (*[]models.User, error) {
+	log.Printf("%s Fetching easyverein members from page: %d", prefix, Page)
 	var easyResponse EasyVereinResponse
 
 	// requestURI = https://easyverein.com/api/stable/contact-details?limit100&page=%d
@@ -35,7 +35,7 @@ func GetMembers(client *resty.Client) (*[]models.User, error) {
 
 	resp, err := makeAPIRequest(client, requestURI)
 	if err != nil {
-		return members, fmt.Errorf("could not perform get request to easyverein contact-details endpoint: %v", err)
+		return members, fmt.Errorf("%s could not perform get request to easyverein contact-details endpoint: %v", prefix, err)
 	}
 
 	err = json.Unmarshal(resp.Body(), &easyResponse)
@@ -47,7 +47,7 @@ func GetMembers(client *resty.Client) (*[]models.User, error) {
 	if easyResponse.Next != "" {
 		*members = append(*members, easyResponse.Members...)
 		Page += 1
-		GetMembers(client)
+		GetMembers(prefix, client)
 	} else {
 		// append members of the last page
 		*members = append(*members, easyResponse.Members...)

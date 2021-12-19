@@ -30,19 +30,23 @@ func init() {
 
 // GetUsers() unmarshals the API response of the wp users endpoint
 // into a slice of Users
-func GetUsers(client *resty.Client) (*[]models.User, error) {
-	log.Printf("Fetching users from page: %d", Page)
+func GetUsers(prefix string, client *resty.Client) (*[]models.User, error) {
+	log.Printf("%s Fetching wordpress users from page: %d", prefix, Page)
 	var wordpressResponse WordpressResponse
 
 	requestURI := config.GetConfig().Wordpress.APIGETRequestURI("users", Page)
 
 	resp, err := makeGETRequest(client, requestURI)
 	if err != nil {
-		return users, fmt.Errorf("could not perform get request to wp users endpoint: %v", err)
+		return users, fmt.Errorf("%s could not perform get request to wp users endpoint: %v", prefix, err)
 	}
 
 	if resp.StatusCode() >= 400 {
-		err = fmt.Errorf("status code: %d response body: %s", resp.StatusCode(), string(resp.Body()))
+		err = fmt.Errorf("%s status code: %d response body: %s",
+			prefix,
+			resp.StatusCode(),
+			string(resp.Body()),
+		)
 		return users, err
 	}
 
@@ -54,7 +58,7 @@ func GetUsers(client *resty.Client) (*[]models.User, error) {
 	// total number of pages is given by the Response Header 'X-WP-TotalPages'
 	numberOfPages, err := strconv.Atoi(resp.Header()["X-Wp-Totalpages"][0])
 	if err != nil {
-		return users, fmt.Errorf("could not parse the value of 'x-wp-totalpages' header: %v", err)
+		return users, fmt.Errorf("%s could not parse the value of 'x-wp-totalpages' header: %v", prefix, err)
 	}
 
 	// iterate from 2nd page to the last page (number of pages)
@@ -68,7 +72,7 @@ func GetUsers(client *resty.Client) (*[]models.User, error) {
 			})
 		}
 		Page += 1
-		GetUsers(client)
+		GetUsers(prefix, client)
 	} else if Page == numberOfPages {
 		//append members of the last page
 		for _, user := range wordpressResponse {
