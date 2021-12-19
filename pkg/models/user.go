@@ -1,6 +1,7 @@
 package models
 
 import (
+	"cmd/service/main.go/pkg/config"
 	"fmt"
 	"log"
 	"strings"
@@ -35,9 +36,13 @@ func (u User) GeneratePassword() string {
 	dateLayout := "2006-01-02"
 	dateOfBirth, err := time.Parse(dateLayout, u.DateOfBirth)
 	if err != nil {
-		log.Println("Failed password creation. Date of Birth either missing or in the wrong format.")
-		log.Printf("\tPassword of %s %s is set to 'default'", u.FirstName, u.LastName)
-		return "default"
+		defaultPW := config.GetConfig().Wordpress.DefaultPassword
+		log.Printf("Failed password creation for '%s %s'. Date of Birth either missing or in the wrong format. Password set to configured default value",
+			u.FirstName,
+			u.LastName,
+			defaultPW,
+		)
+		return defaultPW
 	}
 
 	return dateOfBirth.Format("02.01.2006")

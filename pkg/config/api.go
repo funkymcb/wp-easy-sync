@@ -8,6 +8,7 @@ import (
 )
 
 type APICfg struct {
+	Host        string        `default:"localhost" yaml:"host"`
 	Port        int           `default:"8080" yaml:"port"`
 	Token       string        `yaml:"token"`
 	AuthOffsete time.Duration `yaml:"auth-offset"`

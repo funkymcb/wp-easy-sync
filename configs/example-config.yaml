@@ -13,6 +13,7 @@ wordpress:
   path: "/wp-json/wp/v2/"
   user: "username"
   pass: "password"
+  default-password: "superSecurePW" # default password if password createion (date of birth) failed
   options:
     per_page: 100 # wordpress provides max limit of 100 users per page
     context: "edit"

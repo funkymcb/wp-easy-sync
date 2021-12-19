@@ -21,16 +21,20 @@ type WPUser struct {
 	Email     string `json:"email"`
 }
 
-var page = 1
-var users []models.User
+var Page = 1
+var users *[]models.User
+
+func init() {
+	users = &[]models.User{}
+}
 
 // GetUsers() unmarshals the API response of the wp users endpoint
 // into a slice of Users
-func GetUsers(client *resty.Client) ([]models.User, error) {
-	log.Printf("Fetching users from page: %d", page)
+func GetUsers(client *resty.Client) (*[]models.User, error) {
+	log.Printf("Fetching users from page: %d", Page)
 	var wordpressResponse WordpressResponse
 
-	requestURI := config.GetConfig().Wordpress.APIGETRequestURI("users", page)
+	requestURI := config.GetConfig().Wordpress.APIGETRequestURI("users", Page)
 
 	resp, err := makeGETRequest(client, requestURI)
 	if err != nil {
@@ -54,21 +58,21 @@ func GetUsers(client *resty.Client) ([]models.User, error) {
 	}
 
 	// iterate from 2nd page to the last page (number of pages)
-	if page < numberOfPages {
+	if Page < numberOfPages {
 		for _, user := range wordpressResponse {
-			users = append(users, models.User{
+			*users = append(*users, models.User{
 				LoginName: user.Username,
 				FirstName: user.FirstName,
 				LastName:  user.LastName,
 				Email:     user.Email,
 			})
 		}
-		page += 1
+		Page += 1
 		GetUsers(client)
-	} else if page == numberOfPages {
+	} else if Page == numberOfPages {
 		//append members of the last page
 		for _, user := range wordpressResponse {
-			users = append(users, models.User{
+			*users = append(*users, models.User{
 				LoginName: user.Username,
 				FirstName: user.FirstName,
 				LastName:  user.LastName,
@@ -98,7 +102,7 @@ func CreateUser(client *resty.Client, user models.User) error {
 	}
 
 	if resp.StatusCode() == 200 {
-		log.Printf("Account creation for %s successfull", user.LoginName)
+		log.Printf("Account creation for %s successful", user.LoginName)
 	} else if resp.StatusCode() >= 400 && resp.StatusCode() < 500 {
 		return fmt.Errorf("Account creation Request failed: Status Code: %d",
 			resp.StatusCode(),

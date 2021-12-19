@@ -1,62 +1,74 @@
 package handler
 
 import (
-	"cmd/service/main.go/pkg/config"
-	"cmd/service/main.go/pkg/easyverein"
-	"cmd/service/main.go/pkg/wordpress"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/go-resty/resty/v2"
+	"cmd/service/main.go/pkg/config"
+	easysync "cmd/service/main.go/pkg/easy-sync"
+
+	"github.com/google/uuid"
 	"github.com/savsgio/atreugo/v11"
 )
 
 // SyncEasyToWP triggers the sync between Easyverein and Wordpress
+// and provides an url where the status of the sync can be requested
 // Method: GET
-// Responses: 200, TODO
+// Path: /sync
+// Responses: 202
 func SyncEasyToWP(ctx *atreugo.RequestCtx) error {
-	client := resty.New()
-
-	log.Println("Fetching Members from easyverein.com: ...")
-	log.Println("(API can list max 100 users per page)")
-	easyvereinMembers, err := easyverein.GetMembers(client)
-	if err != nil {
-		log.Fatalln("Error fetching Members from easyverein.com, Error:", err)
-		ctx.Error(err.Error(), http.StatusInternalServerError)
-		return fmt.Errorf(err.Error())
-	}
-	log.Println("Fetching Members from easyverein.com: SUCCESS")
-
-	for i, member := range easyvereinMembers {
-		easyvereinMembers[i].LoginName = member.GenerateLoginName()
-		easyvereinMembers[i].Password = member.GeneratePassword()
-	}
-
-	log.Printf("Fetched %d Members from easyverein.com", len(easyvereinMembers))
-
-	log.Printf("Fetching Members from %s: ...", config.GetConfig().Wordpress.Host)
-	log.Println("(API can list max 100 users per page)")
-	wordpressUsers, err := wordpress.GetUsers(client)
-	if err != nil {
-		log.Printf("error fetching users from %s, %v",
-			config.GetConfig().Wordpress.Host,
-			err,
-		)
-		ctx.Error(err.Error(), http.StatusInternalServerError)
-		return fmt.Errorf(err.Error())
-	}
-	log.Printf("Fetching Users from %s: SUCCESS", config.GetConfig().Wordpress.Host)
-
-	log.Printf("Fetched %d Users from %s",
-		len(wordpressUsers),
-		config.GetConfig().Wordpress.Host,
+	log.Println("Processing:")
+	log.Printf("%s http://%s:%d%s",
+		string(ctx.Method()),
+		config.GetConfig().API.Host,
+		config.GetConfig().API.Port,
+		string(ctx.RequestURI()),
 	)
 
-	// TODO optimize user handling first
-	// log.Println("Running Synchronisation...")
-	// if err = easysync.Run(client, easyvereinMembers, wordpressUsers); err != nil {
-	// 	log.Fatalln("Synchronisation of Users failed:", err)
-	// }
-	return ctx.JSONResponse("sync successfull")
+	requestID := uuid.New()
+	requestIDStr := fmt.Sprintf("%v", requestID)
+	pollingURL := fmt.Sprintf("http://%s:%d/sync/status/%s",
+		config.GetConfig().API.Host,
+		config.GetConfig().API.Port,
+		requestIDStr,
+	)
+	log.Println("Status Polling URL:")
+	log.Println(pollingURL)
+
+	go easysync.TriggerSync(requestIDStr)
+
+	msg := fmt.Sprintf("sync request accepted. status url: %s", pollingURL)
+	return ctx.JSONResponse(msg, http.StatusAccepted)
+}
+
+// GetSyncStatus sync status polling route
+// if sync still running status will remain 202 'accepted'
+// if sync successful status will be 200 'ok'
+// Method: GET
+// Path: /sync/status/{requestID}
+// Response: 200, 202, 404
+func SyncStatus(ctx *atreugo.RequestCtx) error {
+	requestID := ctx.UserValue("requestID")
+	requestIDStr := fmt.Sprintf("%v", requestID)
+	syncStatus, err := easysync.GetSyncStatus(requestIDStr)
+	if err != nil {
+		log.Println("error polling sync status:", err)
+		return ctx.JSONResponse(err.Error(), http.StatusBadRequest)
+	}
+
+	response, err := json.Marshal(syncStatus)
+	if err != nil {
+		msg := fmt.Sprintf("error marshalling syncstatus to json:, %v", err.Error())
+		ctx.Error(msg, http.StatusInternalServerError)
+		return fmt.Errorf(msg)
+	}
+
+	// if lasts sync was not, or is not yet successful
+	if !syncStatus.Status {
+		return ctx.JSONResponse(response, http.StatusAccepted)
+	}
+
+	return ctx.JSONResponse(response)
 }

@@ -39,4 +39,5 @@ func printBanner() {
 
 func initAPIRoutes(server *atreugo.Atreugo) {
 	server.GET("/sync", handler.SyncEasyToWP)
+	server.GET("/sync/status/{requestID}", handler.SyncStatus)
 }

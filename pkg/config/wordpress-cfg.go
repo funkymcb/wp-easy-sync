@@ -6,11 +6,12 @@ import (
 )
 
 type WordpressCfg struct {
-	Host     string            `yaml:"host"`
-	Path     string            `yaml:"path"`
-	Username string            `yaml:"user"`
-	Password string            `yaml:"pass"`
-	Options  map[string]string `yaml:"options,omitempty"`
+	Host            string            `yaml:"host"`
+	Path            string            `yaml:"path"`
+	Username        string            `yaml:"user"`
+	Password        string            `yaml:"pass"`
+	DefaultPassword string            `yaml:"default-password"`
+	Options         map[string]string `yaml:"options,omitempty"`
 }
 
 // OptionsURI will concatenate all options specified in config.yaml
