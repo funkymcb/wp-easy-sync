@@ -37,6 +37,7 @@ curl https://your-wp-domain.com/wp-json/wp/v2/users\?per_page\=100\&page\=1\&con
 - [x] Add config tests
 - [x] Fetch users via wordpress api
 - [x] Implement sync(compare) algorithm
-- [ ] Add the new users (result of sync algorithm) to wordpress via API
-- [ ] Optimize sync algorithm
+- [x] Add the new users (result of sync algorithm) to wordpress via API
+- [x] Optimize sync algorithm
+- [ ] Implement csv reader and POST to easyverein
 - [ ] Add verbose debug output (by using --debug or -v -vv -vvv flags)

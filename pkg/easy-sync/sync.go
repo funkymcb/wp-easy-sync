@@ -19,6 +19,15 @@ type Sync struct {
 	Status        bool
 	Message       string
 	AddedUsers    map[int]string
+	skipped       []Skip
+	failed        []Skip
+}
+
+// TODO implement this
+type Skip struct {
+	SkipID   int
+	Username string
+	message  string
 }
 
 var syncStatus *Sync

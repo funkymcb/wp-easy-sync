@@ -3,9 +3,11 @@ package easyverein
 import (
 	"cmd/service/main.go/pkg/config"
 	"cmd/service/main.go/pkg/models"
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -16,6 +18,42 @@ type EasyVereinResponse struct {
 	Next    string        `json:"next"`
 	Members []models.User `json:"results"`
 }
+
+// EasyVereinMember represents the struct of a member as exported from
+// the local csv export
+type EasyVereinMember struct {
+	MemberID          string
+	Salution          string
+	FirstName         string
+	LastName          string
+	AdditionalAddress string
+	Street            string
+	PostalCode        string
+	Location          string
+	Phone             string
+	Country           string
+	IBAN              string
+	BIC               string
+	Birthdate         string
+	PhoneBiz          string
+	Fax               string
+	Mobile            string
+	EMail             string
+	Nationality       string
+	Gender            string
+	MaritalState      string
+	Job               string
+	Status            string
+	Bank              string
+	EntryDate         string
+	LeavingDate       string
+	Department        string
+	Roles             string
+	MandateID         string
+	Title             string
+}
+
+var prefix = "[SYNC: %s] "
 
 var Page = 1
 var members *[]models.User
@@ -56,9 +94,30 @@ func GetMembers(prefix string, client *resty.Client) (*[]models.User, error) {
 	return members, nil
 }
 
-// makes API GET request using resty
+// SyncCSV takes the data from POST request (base64 encoded csv file)
+// and syncs the members listed with easyverein
+// makes API POST request using resty
 // headers:
 //   "Authorization": "Token <easyverein-api-token>"
+func SyncCSV(requestID string) {
+	prefixID := fmt.Sprintf(prefix, requestID)
+
+	file, err := os.Open("Mitglieder.csv")
+	if err != nil {
+		log.Println("sync failed, could no read csv file")
+	}
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = ';'
+
+	members, err := csvReader.ReadAll()
+	if err != nil {
+		log.Println("sync failed, could not read csv")
+	}
+
+	// TODO implement csv reader and post to easy api
+	log.Println(prefixID, members)
+}
+
 func makeAPIRequest(client *resty.Client, url string) (*resty.Response, error) {
 	resp, err := client.R().
 		SetHeader(

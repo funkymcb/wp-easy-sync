@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/static:nonroot
+FROM alpine
 
 COPY ./out/app /bin/wp-easy-sync
 
